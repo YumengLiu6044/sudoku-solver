@@ -3,8 +3,9 @@ class BadBlockError(Exception):
 
 
 class Block:
-    def __init__(self, index: tuple[int, int], value: int):
+    def __init__(self, index: tuple[int, int], value: int, removable=False) -> None:
         self._index = index
+        self._removable = removable
         if index[0] not in range(9) or index[1] not in range(9) or value not in range(9):
             raise BadBlockError("Bad block")
 
@@ -12,6 +13,12 @@ class Block:
 
     def get_index(self) -> tuple[int, int]:
         return self._index
+
+    def is_removable(self) -> bool:
+        return self._removable
+
+    def set_removable(self, removable: bool) -> None:
+        self._removable = removable
 
     def __getitem__(self, index: int) -> int:
         return self._index[index]
