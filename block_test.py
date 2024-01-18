@@ -1,5 +1,5 @@
 import unittest
-from block import Block
+from block import Block, BadBlockError
 
 
 class BlockTest(unittest.TestCase):
@@ -29,6 +29,14 @@ class BlockTest(unittest.TestCase):
     def test_get_item_second_index(self):
         block1 = Block((3, 5), 6)
         self.assertEqual(block1[1], 5)
+
+    def test_bad_given_location(self):
+        with self.assertRaises(BadBlockError):
+            block1 = Block((9, 9), 4)
+
+    def test_bad_given_value(self):
+        with self.assertRaises(BadBlockError):
+            block1 = Block((9, 9), 10)
 
 
 if __name__ == '__main__':

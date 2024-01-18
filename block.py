@@ -1,10 +1,18 @@
+class BadBlockError(Exception):
+    ...
+
+
 class Block:
     def __init__(self, index: tuple[int, int], value: int):
         self._index = index
+        if index[0] not in range(9) or index[1] not in range(9) or value not in range(9):
+            raise BadBlockError("Bad block")
+
         self._value = value
 
     def get_index(self) -> tuple[int, int]:
         return self._index
+
     def __getitem__(self, index: int) -> int:
         return self._index[index]
 
