@@ -22,6 +22,14 @@ class BlockTest(unittest.TestCase):
         block1 = Block((4, 5), 4)
         self.assertEqual(block1.get_super_block_index(), (1, 1))
 
+    def test_get_item_first_index(self):
+        block1 = Block((3, 5), 6)
+        self.assertEqual(block1[0], 3)
+
+    def test_get_item_second_index(self):
+        block1 = Block((3, 5), 6)
+        self.assertEqual(block1[1], 5)
+
 
 if __name__ == '__main__':
     unittest.main()

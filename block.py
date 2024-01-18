@@ -5,6 +5,8 @@ class Block:
 
     def get_index(self) -> tuple[int, int]:
         return self._index
+    def __getitem__(self, index: int) -> int:
+        return self._index[index]
 
     def get_value(self) -> int:
         return self._value
