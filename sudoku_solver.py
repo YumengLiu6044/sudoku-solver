@@ -6,13 +6,25 @@ from block import Block
 
 class SudokuSolver:
     def __init__(self):
-        self._board = np.array([[0 for _ in range(9)] for _ in range(9)])
+        self._board = np.array([[0 for _ in range(9)] for _ in range(9)], dtype=int)
+        self._blocks = []
+        for i in range(9):
+            row = []
+            for j in range(9):
+                row.append(Block((i, j), self._board[i][j], self._board[i][j] == 0))
+            self._blocks.append(row)
 
     def get_board(self):
         return self._board
 
     def set_board(self, board):
         self._board = board
+        self._blocks = []
+        for i in range(9):
+            row = []
+            for j in range(9):
+                row.append(Block((i, j), self._board[i][j], self._board[i][j] == 0))
+            self._blocks.append(row)
 
     def generate_board(self):
         ...
@@ -51,6 +63,7 @@ class SudokuSolver:
     def add_block(self, in_block: Block):
         if self.check_valid_add(in_block):
             self._board[in_block[0]][in_block[1]] = in_block.get_value()
+            self._blocks[in_block[0]][in_block[1]].set_value(in_block.get_value())
 
     def remove_block(self, rem_block: Block):
         self._board[rem_block[0]][rem_block[1]] = 0

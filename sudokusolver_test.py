@@ -73,7 +73,7 @@ class TestSudoku(unittest.TestCase):
         check_block = Block((2, 3), 4)
         self.assertFalse(solver.check_valid_add(check_block))
 
-    def test_remove_block(self):
+    def test_remove_removable_block(self):
         _test_og_board = [
             [7, 8, 0, 4, 0, 0, 1, 2, 0],
             [6, 0, 0, 0, 7, 5, 0, 0, 9],
