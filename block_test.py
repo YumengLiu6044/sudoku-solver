@@ -32,11 +32,11 @@ class BlockTest(unittest.TestCase):
 
     def test_bad_given_location(self):
         with self.assertRaises(BadBlockError):
-            block1 = Block((9, 9), 4)
+            Block((9, 9), 4)
 
     def test_bad_given_value(self):
         with self.assertRaises(BadBlockError):
-            block1 = Block((9, 9), 10)
+            Block((9, 9), 10)
 
 
 if __name__ == '__main__':
