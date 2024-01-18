@@ -1,9 +1,13 @@
+import numpy as np
 from block import Block
 
 
 class SudokuSolver:
     def __init__(self):
-        self._board = []
+        self._board = np.array([[0 for _ in range(9)] for _ in range(9)])
+
+    def get_board(self):
+        return self._board
 
     def generate_board(self):
         ...
