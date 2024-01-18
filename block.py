@@ -9,5 +9,5 @@ class Block(object):
     def get_value(self) -> int:
         return self._value
 
-    def __equal__(self, other) -> bool:
-        return self._index == other.get_index() and self._value == other.get_value()
+    def __eq__(self, other) -> bool:
+        return (self._index == other.get_index()) == (self._value == other.get_value())
