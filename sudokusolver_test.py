@@ -67,6 +67,12 @@ class TestSudoku(unittest.TestCase):
         check_block = Block((4, 0), 4)
         self.assertFalse(solver.check_valid_add(check_block))
 
+    def test_check_invalid_add_same_location(self):
+        solver = SudokuSolver()
+        solver.set_board(np.array(self._test_board))
+        check_block = Block((2, 3), 4)
+        self.assertFalse(solver.check_valid_add(check_block))
+
     def test_remove_block(self):
         _test_og_board = [
             [7, 8, 0, 4, 0, 0, 1, 2, 0],
