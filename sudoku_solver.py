@@ -28,18 +28,32 @@ class SudokuSolver:
                       ]
         return super_block
 
-    def check_valid_add(self, in_block):
+    def check_valid_add(self, in_block: Block):
+        # Check if the block is empty
+        if self._board[in_block[0]][in_block[1]] != 0:
+            return False
+
         # Check for all the elements in the super block
+        super_block = self.get_super_block(in_block)
+        if in_block.get_value() in super_block.ravel() and in_block.get_value() != 0:
+            return False
 
         # Check for all the elements in the row
+        if in_block.get_value() in self._board[in_block[0]] and in_block.get_value() != 0:
+            return False
+
         # Check for all the elements in the column
-        ...
+        if in_block.get_value() in self._board[:, in_block[1]] and in_block.get_value() != 0:
+            return False
+
+        return True
 
     def add_block(self, in_block: Block):
-        ...
+        if self.check_valid_add(in_block):
+            self._board[in_block[0]][in_block[1]] = in_block.get_value()
 
     def remove_block(self, rem_block: Block):
-        ...
+        self._board[rem_block[0]][rem_block[1]] = 0
 
 
 if __name__ == "__main__":
