@@ -55,9 +55,3 @@ class SudokuSolver:
     def remove_block(self, rem_block: Block):
         self._board[rem_block[0]][rem_block[1]] = 0
 
-
-if __name__ == "__main__":
-    solver = SudokuSolver()
-    add_block = Block((4, 0), 4)
-    print(solver.get_board())
-    print(solver.get_super_block(add_block))
