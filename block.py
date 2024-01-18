@@ -1,4 +1,4 @@
-class Block(object):
+class Block:
     def __init__(self, index: tuple[int, int], value: int):
         self._index = index
         self._value = value
@@ -10,4 +10,4 @@ class Block(object):
         return self._value
 
     def __eq__(self, other) -> bool:
-        return (self._index == other.get_index()) == (self._value == other.get_value())
+        return (self._index == other.get_index()) and (self._value == other.get_value())
