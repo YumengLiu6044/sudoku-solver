@@ -1,6 +1,5 @@
 import unittest
 from sudoku_solver import SudokuSolver
-import numpy as np
 
 
 class TestSudoku(unittest.TestCase):
