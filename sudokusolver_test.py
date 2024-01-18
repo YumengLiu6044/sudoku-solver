@@ -67,6 +67,32 @@ class TestSudoku(unittest.TestCase):
         check_block = Block((4, 0), 4)
         self.assertFalse(solver.check_valid_add(check_block))
 
+    def test_remove_block(self):
+        _test_og_board = [
+            [7, 8, 0, 4, 0, 0, 1, 2, 0],
+            [6, 0, 0, 0, 7, 5, 0, 0, 9],
+            [0, 0, 0, 6, 0, 1, 0, 7, 8],
+            [0, 0, 7, 0, 4, 0, 2, 6, 0],
+            [0, 0, 1, 0, 5, 0, 9, 3, 0],
+            [9, 0, 4, 0, 6, 0, 0, 0, 5],
+            [0, 7, 0, 3, 0, 0, 0, 1, 2],
+            [1, 2, 0, 0, 0, 7, 4, 0, 0],
+            [0, 4, 9, 2, 0, 6, 0, 0, 7]
+        ]
+        solver = SudokuSolver()
+        solver.set_board(np.array(_test_og_board))
+        rem_block = Block((0, 3), 0)
+        solver.remove_block(rem_block)
+        _test_og_board[rem_block[0]][rem_block[1]] = 0
+        new_board = solver.get_board()
+        same = True
+        for i in range(9):
+            for j in range(9):
+                if new_board[i][j] != _test_og_board[i][j]:
+                    same = False
+
+        self.assertTrue(same)
+
 
 if __name__ == '__main__':
     unittest.main()
