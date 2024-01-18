@@ -17,18 +17,8 @@ class TestSudoku(unittest.TestCase):
         [0, 4, 9, 2, 0, 6, 0, 0, 7]
     ]
 
-    def test_init_board_is_empty(self):
-        board = SudokuSolver().get_board()
-        empty = True
-        for row in board:
-            for ele in row:
-                if ele:
-                    empty = False
-        self.assertTrue(empty)
-
     def test_right_super_block(self):
-        solver = SudokuSolver()
-        solver.set_board(np.array(self._test_board))
+        solver = SudokuSolver(np.array(self._test_board))
         expected_super_block = np.array([
                         [4, 0, 0],
                         [0, 7, 5],
@@ -44,32 +34,27 @@ class TestSudoku(unittest.TestCase):
         self.assertTrue(equal)
 
     def test_check_valid_add(self):
-        solver = SudokuSolver()
-        solver.set_board(np.array(self._test_board))
+        solver = SudokuSolver(np.array(self._test_board))
         check_block = Block((6, 4), 8)
         self.assertTrue(solver.check_valid_add(check_block))
 
     def test_check_invalid_add_in_row(self):
-        solver = SudokuSolver()
-        solver.set_board(np.array(self._test_board))
+        solver = SudokuSolver(np.array(self._test_board))
         check_block = Block((6, 4), 1)
         self.assertFalse(solver.check_valid_add(check_block))
 
     def test_check_invalid_add_in_col(self):
-        solver = SudokuSolver()
-        solver.set_board(np.array(self._test_board))
+        solver = SudokuSolver(np.array(self._test_board))
         check_block = Block((6, 4), 5)
         self.assertFalse(solver.check_valid_add(check_block))
 
     def test_check_invalid_add_in_super_block(self):
-        solver = SudokuSolver()
-        solver.set_board(np.array(self._test_board))
+        solver = SudokuSolver(np.array(self._test_board))
         check_block = Block((4, 0), 4)
         self.assertFalse(solver.check_valid_add(check_block))
 
     def test_check_invalid_add_same_location(self):
-        solver = SudokuSolver()
-        solver.set_board(np.array(self._test_board))
+        solver = SudokuSolver(np.array(self._test_board))
         check_block = Block((2, 3), 4)
         self.assertFalse(solver.check_valid_add(check_block))
 
@@ -85,9 +70,10 @@ class TestSudoku(unittest.TestCase):
             [1, 2, 0, 0, 0, 7, 4, 0, 0],
             [0, 4, 9, 2, 0, 6, 0, 0, 7]
         ]
-        solver = SudokuSolver()
-        solver.set_board(np.array(_test_og_board))
-        rem_block = Block((0, 3), 0)
+        solver = SudokuSolver(np.array(self._test_board))
+        added_block = Block((6, 4), 8, True)
+        solver.add_block(added_block)
+        rem_block = Block((6, 4), 0)
         solver.remove_block(rem_block)
         _test_og_board[rem_block[0]][rem_block[1]] = 0
         new_board = solver.get_board()
@@ -95,6 +81,19 @@ class TestSudoku(unittest.TestCase):
         for i in range(9):
             for j in range(9):
                 if new_board[i][j] != _test_og_board[i][j]:
+                    same = False
+
+        self.assertTrue(same)
+
+    def test_remove_not_removable_blocks(self):
+        solver = SudokuSolver(np.array(self._test_board))
+        rem_block = Block((3, 2), 4)
+        solver.remove_block(rem_block)
+        new_board = solver.get_board()
+        same = True
+        for i in range(9):
+            for j in range(9):
+                if new_board[i][j] != self._test_board[i][j]:
                     same = False
 
         self.assertTrue(same)

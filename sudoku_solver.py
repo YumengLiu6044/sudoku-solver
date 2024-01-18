@@ -5,8 +5,8 @@ from block import Block
 
 
 class SudokuSolver:
-    def __init__(self):
-        self._board = np.array([[0 for _ in range(9)] for _ in range(9)], dtype=int)
+    def __init__(self, board: np.ndarray):
+        self._board = board
         self._blocks = []
         for i in range(9):
             row = []
@@ -63,8 +63,9 @@ class SudokuSolver:
     def add_block(self, in_block: Block):
         if self.check_valid_add(in_block):
             self._board[in_block[0]][in_block[1]] = in_block.get_value()
-            self._blocks[in_block[0]][in_block[1]].set_value(in_block.get_value())
+            self._blocks[in_block[0]][in_block[1]] = in_block
 
     def remove_block(self, rem_block: Block):
-        self._board[rem_block[0]][rem_block[1]] = 0
-
+        if self._blocks[rem_block[0]][rem_block[1]].is_removable():
+            self._blocks[rem_block[0]][rem_block[1]].set_value(0)
+            self._board[rem_block[0]][rem_block[1]] = 0
