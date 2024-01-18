@@ -18,6 +18,10 @@ class BlockTest(unittest.TestCase):
         block2 = Block((1, 1), 4)
         self.assertNotEqual(block1, block2)
 
+    def test_super_block_index(self):
+        block1 = Block((4, 4), 4)
+        self.assertEqual(block1.get_super_block_index(), (1, 1))
+
 
 if __name__ == '__main__':
     unittest.main()
