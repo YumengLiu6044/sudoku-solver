@@ -19,7 +19,7 @@ class BlockTest(unittest.TestCase):
         self.assertNotEqual(block1, block2)
 
     def test_super_block_index(self):
-        block1 = Block((4, 4), 4)
+        block1 = Block((4, 5), 4)
         self.assertEqual(block1.get_super_block_index(), (1, 1))
 
 
