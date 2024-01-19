@@ -68,10 +68,6 @@ class SudokuSolver:
         current_block = unsolved[0]
         potential_blocks = self.get_possible_nums(current_block)
 
-        # If the length of the potential list is empty return the board
-        if len(potential_blocks) == 0:
-            return board
-
         # Go through the list one by one and recurse
         for num in potential_blocks:
             copy_of_board = board
