@@ -11,11 +11,7 @@ class SudokuSolver:
     def __init__(self, board: np.ndarray):
         self._board = board
         self._blocks = []
-        for i in range(9):
-            row = []
-            for j in range(9):
-                row.append(Block((i, j), self._board[i][j], self._board[i][j] == 0))
-            self._blocks.append(row)
+        self.set_board(board)
 
     def get_board(self):
         return self._board
