@@ -7,6 +7,7 @@ from block import Block, LocationOccupiedError
 class NoSolutionError(Exception):
     ...
 
+
 class SudokuSolver:
     def __init__(self, board: np.ndarray):
         self._board = board
