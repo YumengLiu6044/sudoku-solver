@@ -1,5 +1,3 @@
-import random
-
 import numpy as np
 from block import Block, LocationOccupiedError
 
@@ -15,7 +13,7 @@ class SudokuSolver:
         self.set_board(board)
 
     def get_board(self):
-        return self._board
+        return self._blocks
 
     def set_board(self, board):
         self._board = board
@@ -52,13 +50,35 @@ class SudokuSolver:
 
         return possible_nums
 
-    def solve(self):
-        # Get a list of unsolved blocks
+    def get_unsolved_blocks(self):
+        unsolved_blocks = []
+        for i in self._blocks:
+            for j in i:
+                if int(j) == 0:
+                    unsolved_blocks.append(j)
+        return unsolved_blocks
+
+    def solve(self, board):
+        unsolved = self.get_unsolved_blocks()
+        # Return the board if all is solved
+        if len(unsolved) == 0:
+            return board
 
         # Get a list a potential numbers
-        # If the length of the potential list is empty raise an error
+        current_block = unsolved[0]
+        potential_blocks = self.get_possible_nums(current_block)
+
+        # If the length of the potential list is empty return the board
+        if len(potential_blocks) == 0:
+            return board
+
         # Go through the list one by one and recurse
-        ...
+        for num in potential_blocks:
+            copy_of_board = board
+            copy_of_board[current_block[0]][current_block[1]].set_value(num)
+            return self.solve(copy_of_board)
+
+        return board
 
     def get_super_block(self, in_block):
         super_block_index = in_block.get_super_block_index()

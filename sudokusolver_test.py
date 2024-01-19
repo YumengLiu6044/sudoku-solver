@@ -92,7 +92,7 @@ class TestSudoku(unittest.TestCase):
         same = True
         for i in range(9):
             for j in range(9):
-                if new_board[i][j] != _test_og_board[i][j]:
+                if int(new_board[i][j]) != _test_og_board[i][j]:
                     same = False
 
         self.assertTrue(same)
@@ -105,7 +105,7 @@ class TestSudoku(unittest.TestCase):
         same = True
         for i in range(9):
             for j in range(9):
-                if new_board[i][j] != self._test_board[i][j]:
+                if int(new_board[i][j]) != self._test_board[i][j]:
                     same = False
 
         self.assertTrue(same)
@@ -127,6 +127,23 @@ class TestSudoku(unittest.TestCase):
         test_block = Block((0, 0), 4)
         with self.assertRaises(LocationOccupiedError):
             solver.get_possible_nums(test_block)
+
+    def test_solver(self):
+        test_board = []
+        nums = '3.542.81.4879.15.6.29.5637485.793.416132.8957.74.6528.2413.9.655.867.192.965124.8'
+        expected = '365427819487931526129856374852793641613248957974165283241389765538674192796512438'
+        for i in range(9):
+            row = []
+            for j in range(9):
+                try:
+                    row.append(int(nums[i * 9 + j]))
+                except:
+                    row.append(0)
+            test_board.append(row)
+
+        solver = SudokuSolver(np.array(test_board))
+        solution = solver.solve(solver.get_board())
+        self.assertEqual(''.join(map(str, map(int, solution.ravel()))), expected)
 
 
 if __name__ == '__main__':
