@@ -143,6 +143,7 @@ class TestSudoku(unittest.TestCase):
 
         solver = SudokuSolver(np.array(test_board))
         solution = solver.solve(solver.get_board())
+
         self.assertEqual(''.join(map(str, map(int, solution.ravel()))), expected)
 
 
