@@ -25,6 +25,7 @@ class SudokuSolver:
             for j in range(9):
                 row.append(Block((i, j), self._board[i][j], self._board[i][j] == 0))
             self._blocks.append(row)
+        self._blocks = np.array(self._blocks)
 
     def generate_board(self):
         ...
@@ -33,17 +34,18 @@ class SudokuSolver:
         possible_nums = []
         if self._blocks[in_block[0]][in_block[1]].get_value() != 0:
             raise LocationOccupiedError(f"{in_block.get_index()} is occupied")
+
         super_block = self.get_super_block(in_block)
         for i in range(1, 10):
-            if i in super_block.ravel():
+            if i in map(int, super_block.ravel()):
                 continue
 
             # Check for all the elements in the row
-            if i in self._board[in_block[0]]:
+            if i in map(int, self._blocks[in_block[0]]):
                 continue
 
             # Check for all the elements in the column
-            if i in self._board[:, in_block[1]]:
+            if i in map(int, self._blocks[:, in_block[1]]):
                 continue
 
             possible_nums.append(i)
@@ -52,6 +54,7 @@ class SudokuSolver:
 
     def solve(self):
         # Get a list of unsolved blocks
+
         # Get a list a potential numbers
         # If the length of the potential list is empty raise an error
         # Go through the list one by one and recurse
@@ -59,7 +62,7 @@ class SudokuSolver:
 
     def get_super_block(self, in_block):
         super_block_index = in_block.get_super_block_index()
-        super_block = self._board[
+        super_block = self._blocks[
                       super_block_index[0]*3:super_block_index[0]*3+3,
                       super_block_index[1]*3:super_block_index[1]*3+3
                       ]
@@ -72,22 +75,21 @@ class SudokuSolver:
 
         # Check for all the elements in the super block
         super_block = self.get_super_block(in_block)
-        if in_block.get_value() in super_block.ravel() and in_block.get_value() != 0:
+        if in_block.get_value() in map(int, super_block.ravel()) and in_block.get_value() != 0:
             return False
 
         # Check for all the elements in the row
-        if in_block.get_value() in self._board[in_block[0]] and in_block.get_value() != 0:
+        if in_block.get_value() in map(int, self._blocks[in_block[0]]) and in_block.get_value() != 0:
             return False
 
         # Check for all the elements in the column
-        if in_block.get_value() in self._board[:, in_block[1]] and in_block.get_value() != 0:
+        if in_block.get_value() in map(int, self._blocks[:, in_block[1]]) and in_block.get_value() != 0:
             return False
 
         return True
 
     def add_block(self, in_block: Block):
         if self.check_valid_add(in_block):
-            self._board[in_block[0]][in_block[1]] = in_block.get_value()
             self._blocks[in_block[0]][in_block[1]] = in_block
         else:
             raise LocationOccupiedError(f'{in_block.get_index()} is occupied')
@@ -95,4 +97,3 @@ class SudokuSolver:
     def remove_block(self, rem_block: Block):
         if self._blocks[rem_block[0]][rem_block[1]].is_removable():
             self._blocks[rem_block[0]][rem_block[1]].set_value(0)
-            self._board[rem_block[0]][rem_block[1]] = 0

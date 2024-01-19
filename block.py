@@ -38,3 +38,9 @@ class Block:
 
     def __eq__(self, other) -> bool:
         return (self._index == other.get_index()) and (self._value == other.get_value())
+
+    def __str__(self) -> str:
+        return f"{self._index}: {self._value}"
+
+    def __int__(self) -> int:
+        return int(self._value)

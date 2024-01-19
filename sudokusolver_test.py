@@ -19,18 +19,24 @@ class TestSudoku(unittest.TestCase):
 
     def test_right_super_block(self):
         solver = SudokuSolver(np.array(self._test_board))
-        expected_super_block = np.array([
+        expected_super_block = [
                         [4, 0, 0],
                         [0, 7, 5],
                         [6, 0, 1]
-        ])
+        ]
         test_block = Block((1, 4), 7)
-        super_block = solver.get_super_block(test_block)
+        super_block = []
+        for blocks in solver.get_super_block(test_block):
+            row = []
+            for block in blocks:
+                row.append(int(block))
+            super_block.append(row)
         equal = True
         for i in range(3):
             for j in range(3):
                 if super_block[i][j] != expected_super_block[i][j]:
                     equal = False
+
         self.assertTrue(equal)
 
     def test_check_valid_add(self):

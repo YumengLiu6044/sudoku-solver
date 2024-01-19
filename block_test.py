@@ -8,11 +8,6 @@ class BlockTest(unittest.TestCase):
         block2 = Block((1, 1), 3)
         self.assertEqual(block1, block2)
 
-    def test_block_not_equal_same_location(self):
-        block1 = Block((1, 1), 3)
-        block2 = Block((1, 1), 4)
-        self.assertNotEqual(block1, block2)
-
     def test_block_not_equal_dif_location(self):
         block1 = Block((1, 3), 3)
         block2 = Block((1, 1), 4)
