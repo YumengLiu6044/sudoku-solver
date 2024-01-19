@@ -2,6 +2,10 @@ class BadBlockError(Exception):
     ...
 
 
+class LocationOccupiedError(Exception):
+    ...
+
+
 class Block:
     def __init__(self, index: tuple[int, int], value: int, removable=False) -> None:
         self._index = index

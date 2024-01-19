@@ -1,8 +1,11 @@
 import random
 
 import numpy as np
-from block import Block
+from block import Block, LocationOccupiedError
 
+
+class NoSolutionError(Exception):
+    ...
 
 class SudokuSolver:
     def __init__(self, board: np.ndarray):
@@ -29,7 +32,32 @@ class SudokuSolver:
     def generate_board(self):
         ...
 
+    def get_possible_nums(self, in_block: Block):
+        possible_nums = []
+        if self._blocks[in_block[0]][in_block[1]].get_value() != 0:
+            raise LocationOccupiedError(f"{in_block.get_index()} is occupied")
+        super_block = self.get_super_block(in_block)
+        for i in range(1, 10):
+            if i in super_block.ravel():
+                continue
+
+            # Check for all the elements in the row
+            if i in self._board[in_block[0]]:
+                continue
+
+            # Check for all the elements in the column
+            if i in self._board[:, in_block[1]]:
+                continue
+
+            possible_nums.append(i)
+
+        return possible_nums
+
     def solve(self):
+        # Get a list of unsolved blocks
+        # Get a list a potential numbers
+        # If the length of the potential list is empty raise an error
+        # Go through the list one by one and recurse
         ...
 
     def get_super_block(self, in_block):
@@ -64,6 +92,8 @@ class SudokuSolver:
         if self.check_valid_add(in_block):
             self._board[in_block[0]][in_block[1]] = in_block.get_value()
             self._blocks[in_block[0]][in_block[1]] = in_block
+        else:
+            raise LocationOccupiedError(f'{in_block.get_index()} is occupied')
 
     def remove_block(self, rem_block: Block):
         if self._blocks[rem_block[0]][rem_block[1]].is_removable():

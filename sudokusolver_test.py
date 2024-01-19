@@ -1,6 +1,6 @@
 import unittest
 from sudoku_solver import SudokuSolver
-from block import Block
+from block import Block, LocationOccupiedError
 import numpy as np
 
 
@@ -36,7 +36,7 @@ class TestSudoku(unittest.TestCase):
     def test_check_valid_add(self):
         solver = SudokuSolver(np.array(self._test_board))
         check_block = Block((6, 4), 8)
-        self.assertTrue(solver.check_valid_add(check_block))
+        solver.add_block(check_block)
 
     def test_check_invalid_add_in_row(self):
         solver = SudokuSolver(np.array(self._test_board))
@@ -57,6 +57,12 @@ class TestSudoku(unittest.TestCase):
         solver = SudokuSolver(np.array(self._test_board))
         check_block = Block((2, 3), 4)
         self.assertFalse(solver.check_valid_add(check_block))
+
+    def test_add_block_already_exists(self):
+        solver = SudokuSolver(np.array(self._test_board))
+        test_block = Block((6, 3), 5)
+        with self.assertRaises(LocationOccupiedError):
+            solver.add_block(test_block)
 
     def test_remove_removable_block(self):
         _test_og_board = [
@@ -97,6 +103,24 @@ class TestSudoku(unittest.TestCase):
                     same = False
 
         self.assertTrue(same)
+
+    def test_possible_number(self):
+        solver = SudokuSolver(np.array(self._test_board))
+        test_block = Block((6, 4), 4)
+        expected = [8, 9]
+        self.assertEqual(expected, solver.get_possible_nums(test_block))
+
+    def test_possible_number_again(self):
+        solver = SudokuSolver(np.array(self._test_board))
+        test_block = Block((6, 6), 4)
+        expected = [5, 6, 8]
+        self.assertEqual(expected, solver.get_possible_nums(test_block))
+
+    def test_possible_number_occupied(self):
+        solver = SudokuSolver(np.array(self._test_board))
+        test_block = Block((0, 0), 4)
+        with self.assertRaises(LocationOccupiedError):
+            solver.get_possible_nums(test_block)
 
 
 if __name__ == '__main__':
