@@ -1,6 +1,7 @@
 import unittest
 from sudoku_solver import SudokuSolver
 from block import Block, LocationOccupiedError
+import random
 
 
 class TestSudoku(unittest.TestCase):
@@ -26,7 +27,7 @@ class TestSudoku(unittest.TestCase):
         ]
         test_block = Block((1, 4), 7)
         super_block = []
-        for blocks in self.solver.get_super_block(test_block):
+        for blocks in SudokuSolver.get_super_block(self.solver.get_board(), test_block):
             row = []
             for block in blocks:
                 row.append(int(block))
@@ -94,17 +95,17 @@ class TestSudoku(unittest.TestCase):
     def test_possible_number(self):
         test_block = Block((6, 4), 4)
         expected = [8, 9]
-        self.assertEqual(expected, self.solver.get_possible_nums(test_block))
+        self.assertEqual(expected, SudokuSolver.get_possible_nums(self.solver.get_board(), test_block))
 
     def test_possible_number_again(self):
         test_block = Block((6, 6), 4)
         expected = [5, 6, 8]
-        self.assertEqual(expected, self.solver.get_possible_nums(test_block))
+        self.assertEqual(expected, SudokuSolver.get_possible_nums(self.solver.get_board(), test_block))
 
     def test_possible_number_occupied(self):
         test_block = Block((0, 0), 4)
         with self.assertRaises(LocationOccupiedError):
-            self.solver.get_possible_nums(test_block)
+            SudokuSolver.get_possible_nums(self.solver.get_board(), test_block)
 
     def test_solver(self):
         test_board = []
@@ -125,9 +126,7 @@ class TestSudoku(unittest.TestCase):
 
         self.solver.set_board(test_board)
         self.solver.solve()
-
-        self.solver.print_board()
-        self.assertEqual(''.join(map(str, map(int, self.solver.get_board().ravel()))), expected)
+        self.assertEqual(expected, ''.join(map(str, map(int, self.solver.get_board().ravel()))))
 
 
 if __name__ == '__main__':

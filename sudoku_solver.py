@@ -28,59 +28,72 @@ class SudokuSolver:
     def generate_board(self):
         ...
 
-    def get_possible_nums(self, in_block: Block):
+    @staticmethod
+    def get_possible_nums(blocks, in_block: Block):
         possible_nums = []
-        if self._blocks[in_block[0]][in_block[1]].get_value() != 0:
+        if blocks[in_block[0]][in_block[1]].get_value() != 0:
             raise LocationOccupiedError(f"{in_block.get_index()} is occupied")
 
         for i in range(1, 10):
-            if i in map(int, self.get_super_block(in_block).ravel()):
+            if i in map(int, SudokuSolver.get_super_block(blocks, in_block).ravel()):
                 continue
 
             # Check for all the elements in the row
-            if i in map(int, self._blocks[in_block[0]]):
+            if i in map(int, blocks[in_block[0]]):
                 continue
 
             # Check for all the elements in the column
-            if i in map(int, self._blocks[:, in_block[1]]):
+            if i in map(int, blocks[:, in_block[1]]):
                 continue
 
             possible_nums.append(i)
 
         return possible_nums
 
-    def get_unsolved_blocks(self):
+    @staticmethod
+    def get_unsolved_blocks(blocks):
         unsolved_blocks = []
-        for i in self._blocks:
+        for i in blocks:
             for j in i:
                 if int(j) == 0:
                     unsolved_blocks.append(j)
         return unsolved_blocks
 
     def solve(self):
-        self._blocks = self._back_track_solving(self._blocks)
+        result = self._back_track_solving(self._blocks)
+        if result is not None:
+            self._blocks = result
 
-    def _back_track_solving(self, board):
-        unsolved = self.get_unsolved_blocks()
+    def _back_track_solving(self, blocks):
+        unsolved = SudokuSolver.get_unsolved_blocks(blocks)
         # Return the board if all is solved
         if len(unsolved) == 0:
-            return board
+            return blocks
 
         # Get a list a potential numbers
         current_block = unsolved[0]
-        potential_blocks = self.get_possible_nums(current_block)
+        potential_blocks = SudokuSolver.get_possible_nums(blocks, current_block)
 
         # Go through the list one by one and recurse
+        copy_of_board = blocks.copy()
+        previous_value = copy_of_board[current_block[0]][current_block[1]].get_value()
+
         for num in potential_blocks:
-            copy_of_board = board
             copy_of_board[current_block[0]][current_block[1]].set_value(num)
-            return self._back_track_solving(copy_of_board)
+            result = self._back_track_solving(copy_of_board)
+            if result is not None:
+                return result
 
-        return board
+            else:
+                copy_of_board[current_block[0]][current_block[1]].set_value(previous_value)
+                continue
 
-    def get_super_block(self, in_block):
+        return None
+
+    @staticmethod
+    def get_super_block(blocks, in_block):
         super_block_index = in_block.get_super_block_index()
-        super_block = self._blocks[
+        super_block = blocks[
                       super_block_index[0]*3:super_block_index[0]*3+3,
                       super_block_index[1]*3:super_block_index[1]*3+3
                       ]
@@ -92,7 +105,7 @@ class SudokuSolver:
             return False
 
         # Check for all the elements in the super block
-        super_block = self.get_super_block(in_block)
+        super_block = SudokuSolver.get_super_block(self._blocks, in_block)
         if in_block.get_value() in map(int, super_block.ravel()) and in_block.get_value() != 0:
             return False
 
