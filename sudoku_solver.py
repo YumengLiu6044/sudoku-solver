@@ -113,3 +113,10 @@ class SudokuSolver:
     def remove_block(self, rem_block: Block):
         if self._blocks[rem_block[0]][rem_block[1]].is_removable():
             self._blocks[rem_block[0]][rem_block[1]].set_value(0)
+
+    def print_board(self):
+        for i in self._board:
+            for j in i:
+                print(j, " ", sep='', end='')
+
+            print('\n')
