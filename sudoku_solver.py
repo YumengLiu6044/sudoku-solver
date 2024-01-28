@@ -7,21 +7,21 @@ class NoSolutionError(Exception):
 
 
 class SudokuSolver:
-    def __init__(self, board: np.ndarray):
-        self._board = board
+    def __init__(self, board: list[list[int]]) -> None:
         self._blocks = []
         self.set_board(board)
 
     def get_board(self):
         return self._blocks
 
-    def set_board(self, board):
-        self._board = board
+    def set_board(self, board: list[list[int]]):
         self._blocks = []
         for i in range(9):
             row = []
+
             for j in range(9):
-                row.append(Block((i, j), self._board[i][j], self._board[i][j] == 0))
+                row.append(Block((i, j), board[i][j], board[i][j] == 0))
+
             self._blocks.append(row)
         self._blocks = np.array(self._blocks)
 
@@ -33,9 +33,8 @@ class SudokuSolver:
         if self._blocks[in_block[0]][in_block[1]].get_value() != 0:
             raise LocationOccupiedError(f"{in_block.get_index()} is occupied")
 
-        super_block = self.get_super_block(in_block)
         for i in range(1, 10):
-            if i in map(int, super_block.ravel()):
+            if i in map(int, self.get_super_block(in_block).ravel()):
                 continue
 
             # Check for all the elements in the row
@@ -58,7 +57,10 @@ class SudokuSolver:
                     unsolved_blocks.append(j)
         return unsolved_blocks
 
-    def solve(self, board):
+    def solve(self):
+        self._blocks = self._back_track_solving(self._blocks)
+
+    def _back_track_solving(self, board):
         unsolved = self.get_unsolved_blocks()
         # Return the board if all is solved
         if len(unsolved) == 0:
@@ -72,7 +74,7 @@ class SudokuSolver:
         for num in potential_blocks:
             copy_of_board = board
             copy_of_board[current_block[0]][current_block[1]].set_value(num)
-            return self.solve(copy_of_board)
+            return self._back_track_solving(copy_of_board)
 
         return board
 
@@ -86,7 +88,7 @@ class SudokuSolver:
 
     def check_valid_add(self, in_block: Block):
         # Check if the block is empty
-        if self._board[in_block[0]][in_block[1]] != 0:
+        if self._blocks[in_block[0]][in_block[1]].get_value() != 0:
             return False
 
         # Check for all the elements in the super block
@@ -115,8 +117,8 @@ class SudokuSolver:
             self._blocks[rem_block[0]][rem_block[1]].set_value(0)
 
     def print_board(self):
-        for i in self._board:
+        for i in self._blocks:
             for j in i:
-                print(j, " ", sep='', end='')
+                print(j.get_value(), " ", sep='', end='')
 
             print('\n')

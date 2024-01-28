@@ -24,9 +24,6 @@ class Block:
     def set_removable(self, removable: bool) -> None:
         self._removable = removable
 
-    def __getitem__(self, index: int) -> int:
-        return self._index[index]
-
     def get_value(self) -> int:
         return self._value
 
@@ -41,6 +38,9 @@ class Block:
 
     def __str__(self) -> str:
         return f"{self._index}: {self._value}"
+
+    def __getitem__(self, index: int) -> int:
+        return self._index[index]
 
     def __int__(self) -> int:
         return int(self._value)
