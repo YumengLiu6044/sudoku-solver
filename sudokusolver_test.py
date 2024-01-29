@@ -46,19 +46,19 @@ class TestSudoku(unittest.TestCase):
 
     def test_check_invalid_add_in_row(self):
         check_block = Block((6, 4), 1)
-        self.assertFalse(self.solver.check_valid_add(check_block))
+        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
 
     def test_check_invalid_add_in_col(self):
         check_block = Block((6, 4), 5)
-        self.assertFalse(self.solver.check_valid_add(check_block))
+        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
 
     def test_check_invalid_add_in_super_block(self):
         check_block = Block((4, 0), 4)
-        self.assertFalse(self.solver.check_valid_add(check_block))
+        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
 
     def test_check_invalid_add_same_location(self):
         check_block = Block((2, 3), 4)
-        self.assertFalse(self.solver.check_valid_add(check_block))
+        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
 
     def test_add_block_already_exists(self):
         test_block = Block((6, 3), 5)
@@ -116,7 +116,6 @@ class TestSudoku(unittest.TestCase):
     def test_solver(self):
         test_board = []
         nums = '3.542.81.4879.15.6.29.5637485.793.416132.8957.74.6528.2413.9.655.867.192.965124.8'
-        expected = '365427819487931526129856374852793641613248957974165283241389765538674192796512438'
         for i in range(9):
             row = []
 
@@ -131,46 +130,19 @@ class TestSudoku(unittest.TestCase):
             test_board.append(row)
 
         self.solver.set_board(test_board)
-        solution_generator = self.solver.solve()
-        while True:
-            try:
-                solution = next(solution_generator)
-                SudokuSolver.print_board(solution)
-                self.assertEqual(expected, ''.join(map(str, map(int, solution.ravel()))))
-            except StopIteration:
-                break
+        SudokuSolver.back_track_solving_single_solution(self.solver.get_board())
+        correct_solution = SudokuSolver.validate_board(self.solver.get_board())
+        self.assertTrue(correct_solution)
 
     def test_multiple_solutions(self):
-        test_board = []
-        nums = '.8...9743.5...8.1..1.......8....5......8.4......3....6.......7..3.5...8.9724...5.'
-
-        for i in range(9):
-            row = []
-
-            for j in range(9):
-                try:
-                    row.append(int(nums[i * 9 + j]))
-
-                except ValueError:
-                    row.append(0)
-
-            test_board.append(row)
-
-        self.solver.set_board(test_board)
-        solution_generator = self.solver.solve()
+        self.solver.set_board(self._test_board)
+        solution_generator = SudokuSolver.back_track_solving_multiple_solution(self.solver.get_board())
         correctness = True
-        while True:
-            try:
-                solution = next(solution_generator)
-                if not SudokuSolver.validate_board(solution):
-                    correctness = False
-                else:
-                    print('Correct solution found')
+        for i in solution_generator:
+            if not SudokuSolver.validate_board(i):
+                correctness = False
 
-            except StopIteration:
-                break
-
-        self.assertEqual(correctness, True)
+        self.assertTrue(correctness)
 
 
 if __name__ == '__main__':

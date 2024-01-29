@@ -52,14 +52,15 @@ class SudokuSolver:
                     unsolved_blocks.append(j)
         return unsolved_blocks
 
-    def solve(self):
-        return SudokuSolver._back_track_solving(self._blocks)
-
     @staticmethod
-    def _back_track_solving(blocks):
+    def back_track_solving_multiple_solution(blocks):
+        if not SudokuSolver.validate_board(blocks):
+            raise ValueError("Invalid board")
+
         unsolved = SudokuSolver.get_unsolved_blocks(blocks)
         # Return the board as a solution if all is solved
         if len(unsolved) == 0:
+            print('Found')
             yield blocks.copy()
             return
 
@@ -69,8 +70,27 @@ class SudokuSolver:
 
         for num in potential_nums:
             blocks[current_block[0]][current_block[1]].set_value(num)
-            yield from SudokuSolver._back_track_solving(blocks)
+            yield from SudokuSolver.back_track_solving_multiple_solution(blocks)
             blocks[current_block[0]][current_block[1]].set_value(0)
+
+    @staticmethod
+    def back_track_solving_single_solution(blocks):
+        unsolved = SudokuSolver.get_unsolved_blocks(blocks)
+        # Return the board as a solution if all is solved
+        if len(unsolved) == 0:
+            print('Found')
+            return True
+
+        # Get a list a potential numbers
+        current_block = unsolved[0]
+        for num in SudokuSolver.get_possible_nums(blocks, current_block):
+            blocks[current_block[0]][current_block[1]].set_value(num)
+            if SudokuSolver.back_track_solving_single_solution(blocks):
+                return True
+
+            blocks[current_block[0]][current_block[1]].set_value(0)
+
+        return False
 
     @staticmethod
     def get_super_block(blocks, in_block):
@@ -81,28 +101,29 @@ class SudokuSolver:
                       ]
         return super_block
 
-    def check_valid_add(self, in_block: Block):
+    @staticmethod
+    def check_valid_add(blocks, in_block: Block):
         # Check if the block is empty
-        if self._blocks[in_block[0]][in_block[1]].get_value() != 0:
+        if blocks[in_block[0]][in_block[1]].get_value() != 0:
             return False
 
         # Check for all the elements in the super block
-        super_block = SudokuSolver.get_super_block(self._blocks, in_block)
+        super_block = SudokuSolver.get_super_block(blocks, in_block)
         if in_block.get_value() in map(int, super_block.ravel()) and in_block.get_value() != 0:
             return False
 
         # Check for all the elements in the row
-        if in_block.get_value() in map(int, self._blocks[in_block[0]]) and in_block.get_value() != 0:
+        if in_block.get_value() in map(int, blocks[in_block[0]]) and in_block.get_value() != 0:
             return False
 
         # Check for all the elements in the column
-        if in_block.get_value() in map(int, self._blocks[:, in_block[1]]) and in_block.get_value() != 0:
+        if in_block.get_value() in map(int, blocks[:, in_block[1]]) and in_block.get_value() != 0:
             return False
 
         return True
 
     def add_block(self, in_block: Block):
-        if self.check_valid_add(in_block):
+        if SudokuSolver.check_valid_add(self._blocks, in_block):
             self._blocks[in_block[0]][in_block[1]] = in_block
         else:
             raise LocationOccupiedError(f'{in_block.get_index()} is occupied')
@@ -118,6 +139,8 @@ class SudokuSolver:
                 print(j.get_value(), " ", sep='', end='')
 
             print('')
+
+        print('\n')
 
     @staticmethod
     def validate_board(blocks) -> bool:
