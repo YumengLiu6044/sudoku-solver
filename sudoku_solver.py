@@ -53,39 +53,34 @@ class SudokuSolver:
         return unsolved_blocks
 
     @staticmethod
-    def back_track_solving_multiple_solution(blocks):
-        if not SudokuSolver.validate_board(blocks):
-            raise ValueError("Invalid board")
-
-        unsolved = SudokuSolver.get_unsolved_blocks(blocks)
+    def back_track_solving_multiple_solution(blocks, unsolved_blocks):
         # Return the board as a solution if all is solved
-        if len(unsolved) == 0:
+        if len(unsolved_blocks) == 0:
             print('Found')
             yield blocks.copy()
             return
 
         # Get a list a potential numbers
-        current_block = unsolved[0]
+        current_block = unsolved_blocks[0]
         potential_nums = SudokuSolver.get_possible_nums(blocks, current_block)
 
         for num in potential_nums:
             blocks[current_block[0]][current_block[1]].set_value(num)
-            yield from SudokuSolver.back_track_solving_multiple_solution(blocks)
+            yield from SudokuSolver.back_track_solving_multiple_solution(blocks, unsolved_blocks[1:])
             blocks[current_block[0]][current_block[1]].set_value(0)
 
     @staticmethod
-    def back_track_solving_single_solution(blocks):
-        unsolved = SudokuSolver.get_unsolved_blocks(blocks)
+    def back_track_solving_single_solution(blocks, unsolved_blocks):
         # Return the board as a solution if all is solved
-        if len(unsolved) == 0:
+        if len(unsolved_blocks) == 0:
             print('Found')
             return True
 
         # Get a list a potential numbers
-        current_block = unsolved[0]
+        current_block = unsolved_blocks[0]
         for num in SudokuSolver.get_possible_nums(blocks, current_block):
             blocks[current_block[0]][current_block[1]].set_value(num)
-            if SudokuSolver.back_track_solving_single_solution(blocks):
+            if SudokuSolver.back_track_solving_single_solution(blocks, unsolved_blocks[1:]):
                 return True
 
             blocks[current_block[0]][current_block[1]].set_value(0)

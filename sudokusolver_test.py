@@ -130,13 +130,15 @@ class TestSudoku(unittest.TestCase):
             test_board.append(row)
 
         self.solver.set_board(test_board)
-        SudokuSolver.back_track_solving_single_solution(self.solver.get_board())
+        SudokuSolver.back_track_solving_single_solution(self.solver.get_board(),
+                                                        SudokuSolver.get_unsolved_blocks(self.solver.get_board()))
         correct_solution = SudokuSolver.validate_board(self.solver.get_board())
         self.assertTrue(correct_solution)
 
     def test_multiple_solutions(self):
         self.solver.set_board(self._test_board)
-        solution_generator = SudokuSolver.back_track_solving_multiple_solution(self.solver.get_board())
+        solution_generator = SudokuSolver.back_track_solving_multiple_solution(self.solver.get_board(),
+                                                                               SudokuSolver.get_unsolved_blocks(self.solver.get_board()))
         correctness = True
         for i in solution_generator:
             if not SudokuSolver.validate_board(i):

@@ -226,8 +226,9 @@ def main():
 
     start_time = time.time()
     my_solver = sudoku_solver.SudokuSolver(sudoku_to_solve)
-
-    if sudoku_solver.SudokuSolver.back_track_solving_single_solution(my_solver.get_board()):
+    board = my_solver.get_board()
+    if sudoku_solver.SudokuSolver.back_track_solving_single_solution(board,
+                                                                     sudoku_solver.SudokuSolver.get_unsolved_blocks(board)):
         sudoku_solver.SudokuSolver.print_board(my_solver.get_board())
 
     print("Run time: %s seconds" % (time.time() - start_time))
