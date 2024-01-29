@@ -1,11 +1,11 @@
 import unittest
 from sudoku_solver import SudokuSolver
 from block import Block, LocationOccupiedError
-import random
 
 
 class TestSudoku(unittest.TestCase):
     def setUp(self):
+        print(self.id())
         self._test_board = [
             [7, 8, 0, 4, 0, 0, 1, 2, 0],
             [6, 0, 0, 0, 7, 5, 0, 0, 9],
@@ -19,7 +19,7 @@ class TestSudoku(unittest.TestCase):
         ]
         self.solver = SudokuSolver(self._test_board)
 
-    def test_right_super_block(self):
+    def test_correct_super_block(self):
         expected_super_block = [
                         [4, 0, 0],
                         [0, 7, 5],
@@ -107,6 +107,12 @@ class TestSudoku(unittest.TestCase):
         with self.assertRaises(LocationOccupiedError):
             SudokuSolver.get_possible_nums(self.solver.get_board(), test_block)
 
+    def test_valid_board(self):
+        self.assertTrue(SudokuSolver.validate_board(self.solver.get_board()), True)
+
+    def test_invalid_board(self):
+        ...
+
     def test_solver(self):
         test_board = []
         nums = '3.542.81.4879.15.6.29.5637485.793.416132.8957.74.6528.2413.9.655.867.192.965124.8'
@@ -125,8 +131,46 @@ class TestSudoku(unittest.TestCase):
             test_board.append(row)
 
         self.solver.set_board(test_board)
-        self.solver.solve()
-        self.assertEqual(expected, ''.join(map(str, map(int, self.solver.get_board().ravel()))))
+        solution_generator = self.solver.solve()
+        while True:
+            try:
+                solution = next(solution_generator)
+                SudokuSolver.print_board(solution)
+                self.assertEqual(expected, ''.join(map(str, map(int, solution.ravel()))))
+            except StopIteration:
+                break
+
+    def test_multiple_solutions(self):
+        test_board = []
+        nums = '.8...9743.5...8.1..1.......8....5......8.4......3....6.......7..3.5...8.9724...5.'
+
+        for i in range(9):
+            row = []
+
+            for j in range(9):
+                try:
+                    row.append(int(nums[i * 9 + j]))
+
+                except ValueError:
+                    row.append(0)
+
+            test_board.append(row)
+
+        self.solver.set_board(test_board)
+        solution_generator = self.solver.solve()
+        correctness = True
+        while True:
+            try:
+                solution = next(solution_generator)
+                if not SudokuSolver.validate_board(solution):
+                    correctness = False
+                else:
+                    print('Correct solution found')
+
+            except StopIteration:
+                break
+
+        self.assertEqual(correctness, True)
 
 
 if __name__ == '__main__':
