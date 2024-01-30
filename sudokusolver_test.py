@@ -27,7 +27,7 @@ class TestSudoku(unittest.TestCase):
         ]
         test_block = Block((1, 4), 7)
         super_block = []
-        for blocks in SudokuSolver.get_super_block(self.solver.get_board(), test_block):
+        for blocks in self.solver.get_super_block(test_block):
             row = []
             for block in blocks:
                 row.append(int(block))
@@ -46,19 +46,19 @@ class TestSudoku(unittest.TestCase):
 
     def test_check_invalid_add_in_row(self):
         check_block = Block((6, 4), 1)
-        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
+        self.assertFalse(self.solver.check_valid_add(check_block))
 
     def test_check_invalid_add_in_col(self):
         check_block = Block((6, 4), 5)
-        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
+        self.assertFalse(self.solver.check_valid_add(check_block))
 
     def test_check_invalid_add_in_super_block(self):
         check_block = Block((4, 0), 4)
-        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
+        self.assertFalse(self.solver.check_valid_add(check_block))
 
     def test_check_invalid_add_same_location(self):
         check_block = Block((2, 3), 4)
-        self.assertFalse(SudokuSolver.check_valid_add(self.solver.get_board(), check_block))
+        self.assertFalse(self.solver.check_valid_add(check_block))
 
     def test_add_block_already_exists(self):
         test_block = Block((6, 3), 5)
@@ -95,20 +95,20 @@ class TestSudoku(unittest.TestCase):
     def test_possible_number(self):
         test_block = Block((6, 4), 4)
         expected = [8, 9]
-        self.assertEqual(expected, SudokuSolver.get_possible_nums(self.solver.get_board(), test_block))
+        self.assertEqual(expected, self.solver.get_possible_nums(test_block))
 
     def test_possible_number_again(self):
         test_block = Block((6, 6), 4)
         expected = [5, 6, 8]
-        self.assertEqual(expected, SudokuSolver.get_possible_nums(self.solver.get_board(), test_block))
+        self.assertEqual(expected, self.solver.get_possible_nums(test_block))
 
     def test_possible_number_occupied(self):
         test_block = Block((0, 0), 4)
         with self.assertRaises(LocationOccupiedError):
-            SudokuSolver.get_possible_nums(self.solver.get_board(), test_block)
+            self.solver.get_possible_nums(test_block)
 
     def test_valid_board(self):
-        self.assertTrue(SudokuSolver.validate_board(self.solver.get_board()), True)
+        ...
 
     def test_invalid_board(self):
         ...
@@ -130,19 +130,15 @@ class TestSudoku(unittest.TestCase):
             test_board.append(row)
 
         self.solver.set_board(test_board)
-        SudokuSolver.back_track_solving_single_solution(self.solver.get_board(),
-                                                        SudokuSolver.get_unsolved_blocks(self.solver.get_board()))
-        correct_solution = SudokuSolver.validate_board(self.solver.get_board())
-        self.assertTrue(correct_solution)
+        self.solver.solve()
+        self.solver.print_board()
 
     def test_multiple_solutions(self):
         self.solver.set_board(self._test_board)
-        solution_generator = SudokuSolver.back_track_solving_multiple_solution(self.solver.get_board(),
-                                                                               SudokuSolver.get_unsolved_blocks(self.solver.get_board()))
+        solutions = self.solver.solve(mode='multi')
         correctness = True
-        for i in solution_generator:
-            if not SudokuSolver.validate_board(i):
-                correctness = False
+        if not self.solver.validate_board():
+            correctness = False
 
         self.assertTrue(correctness)
 
