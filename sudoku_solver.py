@@ -10,6 +10,7 @@ class SudokuSolver:
     def __init__(self, board: list[list[int]]) -> None:
         self._blocks = []
         self._unsolved_blocks = []
+        self._solution = []
         self.set_board(board)
 
     def get_board(self):
@@ -64,6 +65,7 @@ class SudokuSolver:
         # Return the board as a solution if all is solved
         if len(unsolved_blocks) == 0:
             print('Found')
+            self._solution.append(self._blocks.copy())
             yield self._blocks.copy()
             return
 
@@ -80,6 +82,7 @@ class SudokuSolver:
         # Return the board as a solution if all is solved
         if len(unsolved_blocks) == 0:
             print('Found')
+            self._solution.append(self._blocks.copy())
             return True
 
         # Get a list a potential numbers
@@ -141,14 +144,15 @@ class SudokuSolver:
         print('\n')
 
     def validate_board(self) -> bool:
-        for row in self._blocks:
-            for single in row:
-                og_value = single.get_value()
-                single.set_value(0)
-                if og_value != 0:
-                    if og_value not in self.get_possible_nums(single):
-                        return False
+        for blocks in self._solution:
+            for row in blocks:
+                for single in row:
+                    og_value = single.get_value()
+                    single.set_value(0)
+                    if og_value != 0:
+                        if og_value not in self.get_possible_nums(single):
+                            return False
 
-                single.set_value(og_value)
+                    single.set_value(og_value)
 
         return True

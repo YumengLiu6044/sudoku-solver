@@ -131,16 +131,13 @@ class TestSudoku(unittest.TestCase):
 
         self.solver.set_board(test_board)
         self.solver.solve()
+        self.assertTrue(self.solver.validate_board())
         self.solver.print_board()
 
     def test_multiple_solutions(self):
         self.solver.set_board(self._test_board)
-        solutions = self.solver.solve(mode='multi')
-        correctness = True
-        if not self.solver.validate_board():
-            correctness = False
-
-        self.assertTrue(correctness)
+        self.solver.solve(mode='multi')
+        self.assertTrue(self.solver.validate_board())
 
 
 if __name__ == '__main__':
