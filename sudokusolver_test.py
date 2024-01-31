@@ -107,12 +107,6 @@ class TestSudoku(unittest.TestCase):
         with self.assertRaises(LocationOccupiedError):
             self.solver.get_possible_nums(test_block)
 
-    def test_valid_board(self):
-        ...
-
-    def test_invalid_board(self):
-        ...
-
     def test_solver(self):
         test_board = []
         nums = '3.542.81.4879.15.6.29.5637485.793.416132.8957.74.6528.2413.9.655.867.192.965124.8'
@@ -130,14 +124,21 @@ class TestSudoku(unittest.TestCase):
             test_board.append(row)
 
         self.solver.set_board(test_board)
-        self.solver.solve()
-        self.assertTrue(self.solver.validate_board())
-        self.solver.print_board()
+        self.solver.solve('single')
+        self.assertTrue(len(self.solver.get_solutions()) == 1)
 
     def test_multiple_solutions(self):
+        self.solver.solve('multi')
+        self.assertTrue(len(self.solver.get_solutions()) >= 1)
+
+    def test_solve_invalid_mode(self):
+        with self.assertRaises(ValueError):
+            self.solver.solve(solve_mode='invalid')
+
+    def test_invalid_board(self):
+        self._test_board[0][0] = 1
         self.solver.set_board(self._test_board)
-        self.solver.solve(mode='multi')
-        self.assertTrue(self.solver.validate_board())
+        self.assertFalse(self.solver.validate_board(self.solver.get_board()))
 
 
 if __name__ == '__main__':

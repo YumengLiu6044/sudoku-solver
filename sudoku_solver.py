@@ -9,7 +9,6 @@ class NoSolutionError(Exception):
 class SudokuSolver:
     def __init__(self, board: list[list[int]]) -> None:
         self._blocks = []
-        self._unsolved_blocks = []
         self._solution = []
         self.set_board(board)
 
@@ -46,27 +45,14 @@ class SudokuSolver:
         return possible_nums
 
     def get_unsolved_blocks(self):
-        unsolved_blocks = []
-        for i in self._blocks.ravel():
-            if i.get_value() == 0:
-                unsolved_blocks.append(i)
+        return [i for i in self._blocks.ravel() if i.get_value() == 0]
 
-        self._unsolved_blocks = np.array(unsolved_blocks)
-        return self._unsolved_blocks
-
-    def solve(self, mode="single"):
-        if mode not in ["single", "multi"]:
-            raise ValueError("mode must be 'single' or 'multi'")
-
-        func = getattr(self, f'back_track_solving_{mode}_solution')
-        return func(self._unsolved_blocks)
-
-    def back_track_solving_multi_solution(self, unsolved_blocks):
-        # Return the board as a solution if all is solved
+    def _back_track_solving_multi_solution(self, unsolved_blocks):
+        print('multi')
+        # Append the blocks to self._solution if a solution is found
         if len(unsolved_blocks) == 0:
             print('Found')
             self._solution.append(self._blocks.copy())
-            yield self._blocks.copy()
             return
 
         # Get a list a potential numbers
@@ -75,11 +61,13 @@ class SudokuSolver:
 
         for num in potential_nums:
             self._blocks[current_block[0]][current_block[1]].set_value(num)
-            yield from self.back_track_solving_multi_solution(unsolved_blocks[1:])
+            yield from self._back_track_solving_multi_solution(unsolved_blocks[1:])
             self._blocks[current_block[0]][current_block[1]].set_value(0)
 
-    def back_track_solving_single_solution(self, unsolved_blocks):
-        # Return the board as a solution if all is solved
+        return
+
+    def _back_track_solving_single_solution(self, unsolved_blocks):
+        # Append the blocks to self._solution if a solution is found
         if len(unsolved_blocks) == 0:
             print('Found')
             self._solution.append(self._blocks.copy())
@@ -89,12 +77,24 @@ class SudokuSolver:
         current_block = unsolved_blocks[0]
         for num in self.get_possible_nums(current_block):
             self._blocks[current_block[0]][current_block[1]].set_value(num)
-            if self.back_track_solving_single_solution(unsolved_blocks[1:]):
+            if self._back_track_solving_single_solution(unsolved_blocks[1:]):
                 return True
 
             self._blocks[current_block[0]][current_block[1]].set_value(0)
 
         return False
+
+    def solve(self, solve_mode='single'):
+        if solve_mode == 'single':
+            self._back_track_solving_single_solution(self.get_unsolved_blocks())
+        elif solve_mode == 'multi':
+            for _ in self._back_track_solving_multi_solution(self.get_unsolved_blocks()):
+                pass
+        else:
+            raise ValueError("mode must be 'single' or 'multi'")
+
+        # func = getattr(self, f'_back_track_solving_{mode}_solution')
+        # return func(self.get_unsolved_blocks())
 
     def get_super_block(self, in_block):
         super_block_index = in_block.get_super_block_index()
@@ -143,16 +143,21 @@ class SudokuSolver:
 
         print('\n')
 
-    def validate_board(self) -> bool:
-        for blocks in self._solution:
-            for row in blocks:
-                for single in row:
-                    og_value = single.get_value()
-                    single.set_value(0)
-                    if og_value != 0:
-                        if og_value not in self.get_possible_nums(single):
-                            return False
+    def get_solutions(self):
+        return self._solution
 
-                    single.set_value(og_value)
+    def validate_board(self, blocks) -> bool:
+        if len(blocks) == 0:
+            return False
+
+        for row in blocks:
+            for single in row:
+                og_value = single.get_value()
+                single.set_value(0)
+                if og_value != 0:
+                    if og_value not in self.get_possible_nums(single):
+                        return False
+
+                single.set_value(og_value)
 
         return True
